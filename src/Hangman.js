@@ -53,9 +53,10 @@ class Hangman extends Component {
     ];
     let wordindex = Math.floor(Math.random() * word.length);
     // console.log(wordindex);
-    let theword = word[wordindex];
+    // let theword = word[wordindex];
+    let theword = 'a';
     // console.log(typeof theword);
-    this.state = { nWrong: 0, guessed: new Set(), answer: 'apple' };
+    this.state = { nWrong: 0, guessed: new Set(), answer: theword };
     // console.log(word[wordindex]);
     this.handleGuess = this.handleGuess.bind(this);
     this.guessedWord = this.guessedWord.bind(this);
@@ -70,6 +71,7 @@ class Hangman extends Component {
     let p = tword.join('');
     console.log(this.state.answer);
     console.log(this.props.maxWrong);
+
     if (p === this.state.answer) {
       console.log('its done ');
     } else {
@@ -78,10 +80,12 @@ class Hangman extends Component {
 
     return tword;
   }
+
   /** handleGuest: handle a guessed letter:
     - add to guessed letters
     - if not in answer, increase number-wrong guesses
   */
+
   handleGuess(evt) {
     let ltr = evt.target.value;
     // let tword = this.state.answer.split('').map(ltr => (this.state.guessed.has(ltr) ? ltr : '_'));
@@ -94,26 +98,35 @@ class Hangman extends Component {
   /** generateButtons: return array of letter buttons to render */
   generateButtons() {
     let disltr = 'abcdefghijklmnopqrstuvwxyz'.split('');
-    return disltr.map((ltr, i) => (
-      <button key={i} value={ltr} onClick={this.handleGuess} disabled={this.state.guessed.has(ltr)}>
-        {ltr}
-      </button>
-    ));
+    if (this.state.nWrong >= this.props.maxWrong) {
+      return (
+        <button className="Hangman-donebuttton" onClick={this.reloadpage}>
+          Retry
+        </button>
+      );
+    } else {
+      return disltr.map((ltr, i) => (
+        <button
+          key={i}
+          value={ltr}
+          onClick={this.handleGuess}
+          disabled={this.state.guessed.has(ltr)}
+        >
+          {ltr}
+        </button>
+      ));
+    }
   }
   reloadpage() {
     window.location.reload();
   }
+
   // generatedonebutton() {
   //   return (
   //   );
   // }
-  /** render: render game */
-  // numberofwrongsleft() {
-  //   let temp = this.props.maxWrong;
-  //   temp = temp - 1;
-  //   return temp;
-  // }
 
+  /** render: render game */
   imagedisplay() {
     let img;
     if (this.state.nWrong <= this.props.maxWrong - 1) {
@@ -128,10 +141,8 @@ class Hangman extends Component {
     return (
       <div className="Hangman">
         <h1>Hangman</h1>
+        <h5>You have {this.state.nWrong}/6 chances</h5>
         <div className="grid-content">
-          <div className="wrongs">
-            <h2>Number of wongs left : {this.numberofwrongsleft()}</h2>
-          </div>
           <div className="Hangman-divimg">
             <img src={this.imagedisplay()} />
           </div>
@@ -140,9 +151,6 @@ class Hangman extends Component {
           </div>
           <div className="Hangman-divbtn">
             <p className="Hangman-btns">{this.generateButtons()}</p>
-            <button className="Hangman-donebuttton" onClick={this.reloadpage}>
-              Done
-            </button>
           </div>
         </div>
       </div>
