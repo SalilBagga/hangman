@@ -54,9 +54,9 @@ class Hangman extends Component {
     let wordindex = Math.floor(Math.random() * word.length);
     // console.log(wordindex);
     // let theword = word[wordindex];
-    let theword = 'a';
+    let theword = 'apple';
     // console.log(typeof theword);
-    this.state = { nWrong: 0, guessed: new Set(), answer: theword };
+    this.state = { nWrong: 0, guessed: new Set(), answer: theword, correctans: [''] };
     // console.log(word[wordindex]);
     this.handleGuess = this.handleGuess.bind(this);
     this.guessedWord = this.guessedWord.bind(this);
@@ -71,7 +71,9 @@ class Hangman extends Component {
     let p = tword.join('');
     console.log(this.state.answer);
     console.log(this.props.maxWrong);
-
+    console.log(this.state.guessed);
+    // console.log(this.state.correctans);
+    console.log(this.state.correctans.join(''));
     if (p === this.state.answer) {
       console.log('its done ');
     } else {
@@ -80,7 +82,6 @@ class Hangman extends Component {
 
     return tword;
   }
-
   /** handleGuest: handle a guessed letter:
     - add to guessed letters
     - if not in answer, increase number-wrong guesses
@@ -88,10 +89,18 @@ class Hangman extends Component {
 
   handleGuess(evt) {
     let ltr = evt.target.value;
-    // let tword = this.state.answer.split('').map(ltr => (this.state.guessed.has(ltr) ? ltr : '_'));
+    // let arraywala = [];
+    // console.log(`arraywala before adding : ${arraywala}`);
+
+    // arraywala.push(ltr);
+    // console.log(`arraywala before adding : ${arraywala}`);
+    // // let tword = this.state.answer.split('').map(ltr => (this.state.guessed.has(ltr) ? ltr : '_'));
+    // console.log(ltr);
+
     this.setState(st => ({
       guessed: st.guessed.add(ltr),
-      nWrong: st.nWrong + (st.answer.includes(ltr) ? 0 : 1)
+      nWrong: st.nWrong + (st.answer.includes(ltr) ? 0 : 1),
+      correctans: this.state.answer.includes(ltr) ? [...st.correctans, ltr] : [...st.correctans]
     }));
   }
 
@@ -117,6 +126,7 @@ class Hangman extends Component {
       ));
     }
   }
+
   reloadpage() {
     window.location.reload();
   }
@@ -129,6 +139,9 @@ class Hangman extends Component {
   /** render: render game */
   imagedisplay() {
     let img;
+    // if (this.props.answer.includes(this.state.correctans.join(''))) {
+    //   img = win;
+    // } else
     if (this.state.nWrong <= this.props.maxWrong - 1) {
       img = this.props.images[this.state.nWrong];
     } else {
