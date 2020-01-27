@@ -9,6 +9,7 @@ import img5 from './5.jpg';
 import img6 from './6.jpg';
 import win from './win.jpg';
 import lose from './lose.jpg';
+// import { randomWord } from './words';
 
 class Hangman extends Component {
   /** by default, allow 6 guesses and use provided gallows images. */
@@ -55,9 +56,11 @@ class Hangman extends Component {
     // console.log(wordindex);
     // let theword = word[wordindex];
     let theword = 'apple';
+
     // console.log(typeof theword);
     this.state = { nWrong: 0, guessed: new Set(), answer: theword, correctans: [''] };
     // console.log(word[wordindex]);
+    console.log(this.state.guessed);
     this.handleGuess = this.handleGuess.bind(this);
     this.guessedWord = this.guessedWord.bind(this);
   }
@@ -67,20 +70,8 @@ class Hangman extends Component {
   */
 
   guessedWord() {
-    let tword = this.state.answer.split('').map(ltr => (this.state.guessed.has(ltr) ? ltr : '_'));
-    let p = tword.join('');
-    console.log(this.state.answer);
-    console.log(this.props.maxWrong);
-    console.log(this.state.guessed);
-    // console.log(this.state.correctans);
-    console.log(this.state.correctans.join(''));
-    if (p === this.state.answer) {
-      console.log('its done ');
-    } else {
-      console.log('so excitedd');
-    }
-
-    return tword;
+    // let tword = this.state.answer.split('').map(ltr => (this.state.guessed.has(ltr) ? ltr : '_'));
+    return this.state.answer.split('').map(ltr => (this.state.guessed.has(ltr) ? ltr : '_'));
   }
   /** handleGuest: handle a guessed letter:
     - add to guessed letters
@@ -89,6 +80,7 @@ class Hangman extends Component {
 
   handleGuess(evt) {
     let ltr = evt.target.value;
+
     // let arraywala = [];
     // console.log(`arraywala before adding : ${arraywala}`);
 
@@ -97,21 +89,27 @@ class Hangman extends Component {
     // // let tword = this.state.answer.split('').map(ltr => (this.state.guessed.has(ltr) ? ltr : '_'));
     // console.log(ltr);
 
+    let tword = this.state.answer.split('').map(ltr => (this.state.guessed.has(ltr) ? ltr : ''));
+    tword = tword.join('');
     this.setState(st => ({
       guessed: st.guessed.add(ltr),
       nWrong: st.nWrong + (st.answer.includes(ltr) ? 0 : 1),
-      correctans: this.state.answer.includes(ltr) ? [...st.correctans, ltr] : [...st.correctans]
+      correctans: this.state.answer.includes(ltr) ? [...st.correctans, tword] : [...st.correctans]
     }));
   }
 
   /** generateButtons: return array of letter buttons to render */
+
   generateButtons() {
     let disltr = 'abcdefghijklmnopqrstuvwxyz'.split('');
     if (this.state.nWrong >= this.props.maxWrong) {
       return (
-        <button className="Hangman-donebuttton" onClick={this.reloadpage}>
-          Retry
-        </button>
+        <div>
+          <button className="Hangman-donebuttton" onClick={this.reloadpage}>
+            Retry
+          </button>
+          <h4>You lose</h4>
+        </div>
       );
     } else {
       return disltr.map((ltr, i) => (
@@ -139,9 +137,7 @@ class Hangman extends Component {
   /** render: render game */
   imagedisplay() {
     let img;
-    // if (this.props.answer.includes(this.state.correctans.join(''))) {
-    //   img = win;
-    // } else
+
     if (this.state.nWrong <= this.props.maxWrong - 1) {
       img = this.props.images[this.state.nWrong];
     } else {
@@ -154,13 +150,17 @@ class Hangman extends Component {
     return (
       <div className="Hangman">
         <h1>Hangman</h1>
-        <h5>You have {this.state.nWrong}/6 chances</h5>
+        <h5>
+          You have {this.state.nWrong}/{this.props.maxWrong} chances
+        </h5>
         <div className="grid-content">
           <div className="Hangman-divimg">
             <img src={this.imagedisplay()} />
           </div>
           <div className="Hangman-divword">
-            <p className="Hangman-word ">{this.guessedWord()}</p>
+            <p className="Hangman-word ">
+              {this.state.nWrong >= this.props.maxWrong ? this.state.answer : this.guessedWord()}
+            </p>
           </div>
           <div className="Hangman-divbtn">
             <p className="Hangman-btns">{this.generateButtons()}</p>
